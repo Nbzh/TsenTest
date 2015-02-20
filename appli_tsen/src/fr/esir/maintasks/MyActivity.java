@@ -14,9 +14,7 @@ import android.widget.TextView;
 import com.example.esir.nsoc2014.tsen.lob.interfaces.Service_oep;
 import fr.esir.database.MySQLiteHelper;
 import fr.esir.database.SensorsBdd;
-import fr.esir.oep.WeatherForecast;
 import fr.esir.ressources.FilterString;
-import fr.esir.services.Context_service;
 import fr.esir.services.Knx_service;
 import fr.esir.services.Oep_service;
 import fr.esir.services.Regulation_service;
@@ -24,7 +22,6 @@ import knx.Service_knx;
 
 public class MyActivity extends Activity {
     private final static String TAG = MyActivity.class.getSimpleName();
-    public Context_service mContext_service;
     public static Service_oep mOep_service;
     public Service_knx mKnx_service;
     public Regulation_service mRegulation_service;
@@ -61,14 +58,6 @@ public class MyActivity extends Activity {
         public void onServiceConnected(ComponentName name, IBinder service) {
             //there 4 services so we need to know which is started
             switch (name.getClassName()) {
-                case "fr.esir.services.Context_service":
-                    mContext_service = ((Context_service.LocalBinder) service).getService();
-                    if (!mContext_service.initialize()) {
-                        Log.e(TAG, "Unable to initialize the context");
-                        finish();
-                    }
-                    context_state.setText(R.string.connected);
-                    break;
                 case "fr.esir.services.Oep_service":
                     mOep_service = ((Oep_service.LocalBinder) service).getService();
                     if (!mOep_service.initialize()) {
@@ -101,10 +90,6 @@ public class MyActivity extends Activity {
         @Override
         public void onServiceDisconnected(ComponentName name) {
             switch (name.getClassName()) {
-                case "fr.esir.services.Context_service":
-                    mContext_service = null;
-                    context_state.setText(R.string.disconnected);
-                    break;
                 case "fr.esir.services.Oep_service":
                     mOep_service = null;
                     oep_state.setText(R.string.disconnected);
@@ -210,13 +195,7 @@ public class MyActivity extends Activity {
     }
 
     private void bindServices() {
-
-        // start the service context_service
-        Intent contextServiceIntent = new Intent(this.getApplicationContext(), Context_service.class);
-        bindService(contextServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
-
         // start the service oep_service
-        //condition : the contexte_service is working
         Intent oepServiceIntent = new Intent(this.getApplicationContext(), Oep_service.class);
         bindService(oepServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
 
@@ -233,8 +212,6 @@ public class MyActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //unbindService(mServiceConnection);
-        mContext_service = null;
     }
 
     @Override

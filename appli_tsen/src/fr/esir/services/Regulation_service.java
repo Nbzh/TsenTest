@@ -17,9 +17,10 @@ import fr.esir.ressources.FilterString;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class Regulation_service extends Service {
-    private final static String TAG = Context_service.class.getSimpleName();
+    private final static String TAG = Regulation_service.class.getSimpleName();
     private final IBinder mBinder = new LocalBinder();
     private List<DatesInterval> listConsigne;
     public RepetetiveTask rt;
@@ -64,12 +65,20 @@ public class Regulation_service extends Service {
         long startDate = entry.getStartDate().getTime();
         //30 minutes before the lesson
         long min30B4StartDate = startDate - (30 * 60 * 1000);
-
+        Log.w("StartDate", min30B4StartDate + "");
         double cons = entry.getConsigne();
+        double nb_pers = entry.getNbPerson();
         long currentDate = System.currentTimeMillis();
 
+        String s = String.format("%d min, %d sec",
+                TimeUnit.MILLISECONDS.toMinutes((startDate - currentDate) - min30B4StartDate),
+                TimeUnit.MILLISECONDS.toSeconds((startDate - currentDate) - min30B4StartDate) -
+                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((startDate - currentDate) - min30B4StartDate))
+        );
+
+        Log.i("TIME MIN", s);
         //start a task 30 minutes before the lesson = predict the heat time
-        rt = new RepetetiveTask((startDate - currentDate) - min30B4StartDate, cons, entry.getEndDate());
+        rt = new RepetetiveTask((startDate - currentDate) - min30B4StartDate, cons, nb_pers, entry.getEndDate());
     }
 
     private void sortList(List<DatesInterval> l) {

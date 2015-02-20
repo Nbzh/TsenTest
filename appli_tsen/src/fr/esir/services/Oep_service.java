@@ -11,6 +11,7 @@ import android.util.Log;
 import com.example.esir.nsoc2014.tsen.lob.interfaces.OnSearchCompleted;
 import com.example.esir.nsoc2014.tsen.lob.interfaces.Prevision;
 import com.example.esir.nsoc2014.tsen.lob.interfaces.Service_oep;
+import com.example.esir.nsoc2014.tsen.lob.objects.DatesInterval;
 import fr.esir.maintasks.MyActivity;
 import fr.esir.oep.WeatherForecast;
 import fr.esir.maintasks.ConfigParams;
@@ -20,7 +21,7 @@ import fr.esir.ressources.FilterString;
 import java.io.IOException;
 import java.io.Serializable;
 import java.sql.ResultSet;
-import java.util.Calendar;
+import java.util.*;
 
 public class Oep_service extends Service implements OnSearchCompleted, Service_oep {
     private final IBinder mBinder = new LocalBinder();
@@ -65,7 +66,7 @@ public class Oep_service extends Service implements OnSearchCompleted, Service_o
         c.set(Calendar.MILLISECOND, 0);
         long howMany = c.getTimeInMillis() - System.currentTimeMillis();
         Log.w("DELAY", sh.getLong("DELAY", howMany) + "");
-        rt = new RepetetiveTask(sh.getLong("DELAY", howMany), RepetetiveTask.ACTION_PREDICT);
+        rt = new RepetetiveTask(sh.getLong("DELAY", howMany));
         //long firstDelay =
          /*am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
         //create a pending intent to be called at midnight
@@ -116,9 +117,7 @@ public class Oep_service extends Service implements OnSearchCompleted, Service_o
         try {
             db = new DatabaseRegression(wf, this);
             db.predictNext(o);
-            Bundle extras = new Bundle();
-            extras.putSerializable("HashMap", db.getHashmap());
-            broadcastUpdate(FilterString.OEP_DATA_STUDENTS_OF_DAY, "Data", extras);
+            studentOfDay(db.getHashmap());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -135,6 +134,16 @@ public class Oep_service extends Service implements OnSearchCompleted, Service_o
         Bundle extras = new Bundle();
         extras.putSerializable("List", (Serializable) db.getList());
         broadcastUpdate(FilterString.OEP_DATA_CONSIGNES_OF_DAY, "Data", extras);
+    }
+
+    private void studentOfDay(HashMap<Date, List<DatesInterval>> map) {
+        for (Map.Entry<Date, List<DatesInterval>> entry : map.entrySet()) {
+            Log.w("HASHMAP STUDENTS", entry.getKey() + "");
+            for (DatesInterval entryDi : entry.getValue()) {
+                Log.w("HASHMAP STUDENTS", entryDi.getId() + " will be in classroom " + entryDi.getLesson()
+                        + ". His consigne must be " + entryDi.getConsigne() + " °C");
+            }
+        }
     }
 
     public void startPrediction() throws IOException {

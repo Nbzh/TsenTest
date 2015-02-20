@@ -1,12 +1,6 @@
 package knx;
 
 import org.codehaus.jackson.JsonNode;
-import org.kevoree.modeling.api.Callback;
-import org.kevoree.modeling.api.KObject;
-import tsen.Room;
-import tsen.Sensor;
-//import tsen.TsenDimension;
-import tsen.TsenView;
 import tuwien.auto.calimero.FrameEvent;
 import tuwien.auto.calimero.dptxlator.DPTXlator;
 import tuwien.auto.calimero.dptxlator.DPTXlator2ByteFloat;
