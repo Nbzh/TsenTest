@@ -1,7 +1,5 @@
 package fr.esir.services;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +11,8 @@ import android.util.Log;
 import com.example.esir.nsoc2014.tsen.lob.interfaces.OnSearchCompleted;
 import com.example.esir.nsoc2014.tsen.lob.interfaces.Prevision;
 import com.example.esir.nsoc2014.tsen.lob.interfaces.Service_oep;
+import fr.esir.maintasks.MyActivity;
+import fr.esir.oep.WeatherForecast;
 import fr.esir.maintasks.ConfigParams;
 import fr.esir.oep.*;
 import fr.esir.ressources.FilterString;
@@ -21,9 +21,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.sql.ResultSet;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.concurrent.TimeUnit;
 
 public class Oep_service extends Service implements OnSearchCompleted, Service_oep {
     private final IBinder mBinder = new LocalBinder();
@@ -32,6 +29,8 @@ public class Oep_service extends Service implements OnSearchCompleted, Service_o
     private Context context = ConfigParams.context;
 
     private Prevision db;
+
+    public WeatherForecast wf;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -115,6 +114,7 @@ public class Oep_service extends Service implements OnSearchCompleted, Service_o
     @Override
     public void onSearchCompleted(ResultSet o) {
         try {
+            db = new DatabaseRegression(wf, this);
             db.predictNext(o);
             Bundle extras = new Bundle();
             extras.putSerializable("HashMap", db.getHashmap());
@@ -126,7 +126,7 @@ public class Oep_service extends Service implements OnSearchCompleted, Service_o
 
     @Override
     public void onSearchCompleted(String weath) {
-        db.getWeatherForecast().searchDone(weath);
+        wf.searchDone(weath);
     }
 
     @Override
@@ -138,7 +138,8 @@ public class Oep_service extends Service implements OnSearchCompleted, Service_o
     }
 
     public void startPrediction() throws IOException {
-        db = new DatabaseRegression(this);
+        //db = new DatabaseRegression(this);
+        wf = new WeatherForecast(this);
         weatherSearch();
     }
 }

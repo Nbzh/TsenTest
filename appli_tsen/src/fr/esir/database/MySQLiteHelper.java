@@ -66,12 +66,12 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     private static final String DATABASE_CREATE_USER_VOTE = "create table "
             + TABLE_USER_VOTE + "(" + COLUMN_DATA
             + " TEXT not null, " + COLUMN_USER
-            + "TEXT not null, " + COLUMN_HUM_IN
-            + "TEXT not null, " + COLUMN_HUM_OU
-            + "TEXT not null, " + COLUMN_TEMP_IN
-            + "TEXT not null, " + COLUMN_TEMP_OU
-            + "TEXT not null, " + COLUMN_LUM_OU
-            + "TEXT not null);";
+            + " TEXT not null, " + COLUMN_HUM_IN
+            + " TEXT not null, " + COLUMN_HUM_OU
+            + " TEXT not null, " + COLUMN_TEMP_IN
+            + " TEXT not null, " + COLUMN_TEMP_OU
+            + " TEXT not null, " + COLUMN_LUM_OU
+            + " TEXT not null);";
 
     @Override
     public void onCreate(SQLiteDatabase db) {

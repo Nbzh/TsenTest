@@ -86,7 +86,7 @@ public class Regulation_service extends Service {
             Log.w(TAG, "Between " + entry.getStartDate() + " and " + entry.getEndDate()
                     + " the temperature in the classroom " + entry.getLesson()
                     + " must be " + entry.getConsigne() + " °C");
-            //setAlarm30B4(entry);
+            setAlarm30B4(entry);
         }
     }
 

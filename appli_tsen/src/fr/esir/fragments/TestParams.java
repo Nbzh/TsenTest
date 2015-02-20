@@ -35,6 +35,7 @@ public class TestParams extends Fragment {
 
     private void setSharedPref() {
         pref.edit().putLong("DELAY", Long.valueOf(idr.getText().toString()).longValue() * 60000).apply();
+        Log.w("DELAY", "" + pref.getLong("DELAY", -1));
     }
 
     @Override

@@ -107,7 +107,7 @@ public class RepetetiveTask {
     private void calculatedTrueHeatTime() {
         //send cons value to regulator when it's the estimated time
         //check i_temp sensor value and wait the temp is "consigne"
-        //calculate the difference between the start and end dates
+        //calculate the difference between the start and end dates -> DataLearning
         //add the values to the arff file
         scheduler.shutdown();
     }

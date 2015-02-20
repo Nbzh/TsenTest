@@ -14,6 +14,8 @@ public class Knx_service extends Service implements Service_knx {
     private final IBinder mBinder = new LocalBinder();
     CaliConnection cc = new CaliConnection(this);
 
+    public static long startDate;
+
     @Override
     public IBinder onBind(Intent intent) {
         return mBinder;

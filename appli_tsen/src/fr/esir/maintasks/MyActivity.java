@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.example.esir.nsoc2014.tsen.lob.interfaces.Service_oep;
 import fr.esir.database.MySQLiteHelper;
 import fr.esir.database.SensorsBdd;
+import fr.esir.oep.WeatherForecast;
 import fr.esir.ressources.FilterString;
 import fr.esir.services.Context_service;
 import fr.esir.services.Knx_service;
@@ -27,6 +28,7 @@ public class MyActivity extends Activity {
     public static Service_oep mOep_service;
     public Service_knx mKnx_service;
     public Regulation_service mRegulation_service;
+
     TextView context_state;
     TextView oep_state;
     TextView regulation_state;
@@ -47,11 +49,12 @@ public class MyActivity extends Activity {
     TextView next_prog;
 
     public static SensorsBdd sb;
-    public static double lastHum_in;
-    public static double lastHum_out;
-    public static double lastTemp_in;
-    public static double lastTemp_out;
-    public static double lastLum_out;
+
+    public static double lastHum_in = 0;
+    public static double lastHum_out = 0;
+    public static double lastTemp_in = 0;
+    public static double lastTemp_out = 0;
+    public static double lastLum_out = 0;
 
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
@@ -142,6 +145,7 @@ public class MyActivity extends Activity {
     }
 
     public static Context ct;
+
     /**
      * Called when the activity is first created.
      */
@@ -201,7 +205,7 @@ public class MyActivity extends Activity {
         sb = new SensorsBdd(this);
     }
 
-    public void setTvProg(String string){
+    public void setTvProg(String string) {
         next_prog.setText(string);
     }
 
@@ -256,7 +260,7 @@ public class MyActivity extends Activity {
             }
         });*/
         String[] dataSplit = data.split(" ");
-        sb.open();
+        //sb.openReadable();
         if (add.equals("0/0/4")) {
             co2.setText(data);
             sb.insertDataSensors(MySQLiteHelper.TABLE_CO2_IN, dataSplit[0]);
@@ -287,7 +291,7 @@ public class MyActivity extends Activity {
             lastTemp_in = Double.parseDouble(dataSplit[0]);
             temp_in.setText(data);
         }
-        sb.close();
+        //sb.close();
     }
 
     private static IntentFilter makeServicesUpdateIntentFilter() {

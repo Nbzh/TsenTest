@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 import com.example.esir.nsoc2014.tsen.lob.objects.ArffGenerated;
 import fr.esir.maintasks.MyActivity;
 
@@ -22,11 +23,15 @@ public class SensorsBdd {
         dbHelper = new MySQLiteHelper(context);
     }
 
-    public void open() throws SQLException {
+    private void openWritable() throws SQLException {
         database = dbHelper.getWritableDatabase();
     }
 
-    public void close() {
+    private void openReadable() throws SQLException {
+        database = dbHelper.getReadableDatabase();
+    }
+
+    private void close() {
         dbHelper.close();
     }
 
@@ -36,12 +41,15 @@ public class SensorsBdd {
 
     public long insertDataSensors(String table_name, String data) {
         //Création d'un ContentValues (fonctionne comme une HashMap)
+        openWritable();
         ContentValues values = new ContentValues();
         //on lui ajoute une valeur associé à une clé (qui est le nom de la colonne dans laquelle on veut mettre la valeur)
         values.put(MySQLiteHelper.COLUMN_TIME, System.currentTimeMillis());
         values.put(MySQLiteHelper.COLUMN_DATA, data);
         //on insère l'objet dans la BDD via le ContentValues
-        return database.insert(table_name, null, values);
+        long l = database.insert(table_name, null, values);
+        close();
+        return l;
     }
 
     public long insertDataVote(String user, String data, String hum_in, String hum_ou, String temp_in, String temp_ou, String lum_ou) {
@@ -65,14 +73,17 @@ public class SensorsBdd {
         return database.insert(MySQLiteHelper.TABLE_USER_VOTE, null, values);
     }
 
-    public ArffGenerated getData4Arff(ArffGenerated arff, String user) {
+    public ArffGenerated getData4Arff(String user) {
+        ArffGenerated arff = new ArffGenerated();
+        arff.generateArff(user);
         String selectQuery = "SELECT * FROM " + MySQLiteHelper.TABLE_USER_VOTE
-                + " WHERE " + MySQLiteHelper.COLUMN_USER + " = " + user;
-        open();
+                + " WHERE " + MySQLiteHelper.COLUMN_USER + " like '" + user + "'";
+        openReadable();
         Cursor cursor = database.rawQuery(selectQuery, null);
         int i = 0;
         if (cursor.moveToFirst()) {
             do {
+                Log.w("moveFirst", ""+i);
                 i += 1;
                 double temp_in = correctValueTemp(cursor.getString(4), cursor.getString(0));
                 arff.addDataCustom(Double.parseDouble(cursor.getString(3)),
@@ -80,8 +91,10 @@ public class SensorsBdd {
             } while (cursor.moveToNext());
             if (i < 10)
                 arff.addDataGeneric();
-        } else
+        } else{
             arff.addDataGeneric();
+            Log.w("moveFirst", "NO");
+        }
         close();
         return arff;
     }
